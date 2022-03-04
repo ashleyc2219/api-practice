@@ -6,14 +6,17 @@ import config from './Config';
 
 function App() {
   const [data, setData] = useState([]);
-  // 改寫成async, await的方式
+
+  // 取資料 改寫成一個function
+  // ?page=${page} 是node後端資料庫 寫好的可以透過res.query接住page的值
+  const getData = async (page = 1) => {
+    const obj = await (await fetch(config.AB_LIST + `?page=${page}`)).json();
+    console.log(obj);
+    setData(obj);
+  };
+  // 要取資料直接呼叫function
   useEffect(() => {
-    (async () => {
-      const r1 = await fetch(config.AB_LIST);
-      const obj = await r1.json();
-      console.log(obj);
-      setData(obj);
-    })();
+    getData();
   }, []);
 
   // 會跑兩次 1st:最初始render頁面
@@ -52,7 +55,13 @@ function App() {
               .map((value, index) => {
                 return (
                   <li className="page-item">
-                    <a className="page-link" href="#/">
+                    <a
+                      className="page-link"
+                      href="#/"
+                      onClick={() => {
+                        getData(index + 1);
+                      }}
+                    >
                       {index + 1}
                     </a>
                   </li>
