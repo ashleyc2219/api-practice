@@ -39,6 +39,34 @@ function App() {
   return (
     <div className="App">
       <div className="container">
+        {data.rows && data.rows.length ? (
+          <ul className="pagination">
+            <li className="page-item">
+              <a className="page-link" href="#/">
+                Previous
+              </a>
+            </li>
+
+            {Array(data.totalPages)
+              .fill(1)
+              .map((value, index) => {
+                return (
+                  <li className="page-item">
+                    <a className="page-link" href="#/">
+                      {index + 1}
+                    </a>
+                  </li>
+                );
+              })}
+            <li className="page-item">
+              <a className="page-link" href="#/">
+                Next
+              </a>
+            </li>
+          </ul>
+        ) : (
+          ''
+        )}
         <table className="table table-striped">
           <thead>
             <tr>
