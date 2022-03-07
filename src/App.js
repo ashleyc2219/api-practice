@@ -1,24 +1,39 @@
 import './App.css';
 import { useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 // 將連接資料庫需要用到的參數，丟到一個檔案裡方便管理
 import config from './Config';
 
 function App() {
   const [data, setData] = useState([]);
-  // 改寫成async, await的方式
+
+  // 取資料 改寫成一個function
+  // ?page=${page} 是node後端資料庫 寫好的可以透過res.query接住page的值
+  const getData = async (page = 1) => {
+    const obj = await (await fetch(config.AB_LIST + `?page=${page}`)).json();
+    console.log(obj);
+    setData(obj);
+  };
+  let history = useHistory();
+  let location = useLocation();
+  // 要取資料直接呼叫function
   useEffect(() => {
-    (async () => {
-      const r1 = await fetch(config.AB_LIST);
-      const obj = await r1.json();
-      console.log(obj);
-      setData(obj);
-    })();
-  }, []);
+    const usp = new URLSearchParams(location.search)
+    const page = parseInt(usp.get('page'));
+    console.log({page})
+    getData(page || 1);
+  }, [location.search]);
 
   // 會跑兩次 1st:最初始render頁面
   // 2nd:因為12行setData，狀態值改變，所以會再render一次
   console.log(data);
+  
+
+  function changeQueryString(page) {
+    history.push(`?page=${page}`)
+  }
 
   // 判斷data拿到沒有，如果是undefined的時候render就會報錯
   const renderMe = (data) => {
@@ -41,8 +56,14 @@ function App() {
       <div className="container">
         {data.rows && data.rows.length ? (
           <ul className="pagination">
-            <li className="page-item">
-              <a className="page-link" href="#/">
+            <li className={data.page <= 1 ? 'disabled page-item' : 'page-item'}>
+              <a
+                className="page-link"
+                href="#/"
+                onClick={() => {
+                  getData(data.page - 1);
+                }}
+              >
                 Previous
               </a>
             </li>
@@ -51,15 +72,40 @@ function App() {
               .fill(1)
               .map((value, index) => {
                 return (
-                  <li className="page-item">
-                    <a className="page-link" href="#/">
+                  <li
+                    key={'page' + index}
+                    className={
+                      data.page === index + 1 ? 'page-item active' : 'page-item'
+                    }
+                  >
+                    <a
+                      className="page-link"
+                      href="#/"
+                      onClick={(event) => {
+                        event.preventDefault();
+                        getData(index + 1);
+                        changeQueryString(index + 1);
+                      }}
+                    >
                       {index + 1}
                     </a>
                   </li>
                 );
               })}
-            <li className="page-item">
-              <a className="page-link" href="#/">
+            <li
+              className={
+                data.page >= data.totalPages
+                  ? 'disabled page-item'
+                  : 'page-item'
+              }
+            >
+              <a
+                className="page-link"
+                href="#/"
+                onClick={() => {
+                  getData(data.page + 1);
+                }}
+              >
                 Next
               </a>
             </li>
