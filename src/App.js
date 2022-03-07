@@ -20,19 +20,18 @@ function App() {
   let location = useLocation();
   // 要取資料直接呼叫function
   useEffect(() => {
-    const usp = new URLSearchParams(location.search)
+    const usp = new URLSearchParams(location.search);
     const page = parseInt(usp.get('page'));
-    console.log({page})
+    console.log({ page });
     getData(page || 1);
   }, [location.search]);
 
   // 會跑兩次 1st:最初始render頁面
   // 2nd:因為12行setData，狀態值改變，所以會再render一次
   console.log(data);
-  
 
   function changeQueryString(page) {
-    history.push(`?page=${page}`)
+    history.push(`?page=${page}`);
   }
 
   // 判斷data拿到沒有，如果是undefined的時候render就會報錯
