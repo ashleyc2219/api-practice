@@ -13,7 +13,7 @@ ReactDOM.render(
         <Route exact path={'/'}>
           <App />
         </Route>
-        <Route path={'/myfrom'}>
+        <Route path={'/myform'}>
           <Myfrom />
         </Route>
       </Switch>

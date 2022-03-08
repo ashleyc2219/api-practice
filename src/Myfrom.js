@@ -29,6 +29,7 @@ function Myfrom(props) {
     //   避免傳統方式送出表單
     event.preventDefault();
 
+    // 會跟body還有img一起傳到後端，因為formdata預設的類型是multipart formdata
     const fd = new FormData(document.form1);
 
     const r = await fetch(API, {
